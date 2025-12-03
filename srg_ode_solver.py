@@ -5,7 +5,7 @@ from scipy import interpolate
 import matplotlib.pyplot as plt
 import json
 
-inputFileName = "srg8.json"
+input_file_name = "srg8.json"
 
 theta1 = np.deg2rad(1.3)
 theta2 = np.deg2rad(9.2)
@@ -23,10 +23,10 @@ Ud = 0.3  #Diode forward volage (generation phase)
 i0 = 0
 
 try:
-    with open(inputFileName, 'r') as inputFile:
+    with open(input_file_name, 'r') as inputFile:
         file_content = inputFile.read()
         file_data = json.loads(file_content)
-        thetadata = file_data["theta"]
+        theta_data = file_data["theta"]
         Ldata = file_data["inductance"]
 except Exception as e:
     print(f"An error occurred: {e}")
@@ -36,7 +36,7 @@ except Exception as e:
 
 
 # Interpolation
-theta_rad = np.deg2rad(thetadata)
+theta_rad = np.deg2rad(theta_data)
 
 L = interpolate.make_splrep(theta_rad, Ldata, s=0) 
 

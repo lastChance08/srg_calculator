@@ -5,7 +5,7 @@ from scipy.integrate import solve_ivp
 from scipy import interpolate
 import json
 
-inputFileName = "srg8.json"
+input_file_name = "srg8.json"
 
 r = 1
 U1 = 24
@@ -29,16 +29,16 @@ num_parents_mating = 2 # Number of solutions to be selected as parents in the ma
 sol_per_pop = 20 # Number of solutions in the population.
 
 try:
-    with open(inputFileName, 'r') as inputFile:
+    with open(input_file_name, 'r') as inputFile:
         file_content = inputFile.read()
         file_data = json.loads(file_content)
-        thetadata = file_data["theta"]
+        theta_data = file_data["theta"]
         Ldata = file_data["inductance"]
 except Exception as e:
     print(f"An error occurred: {e}")
     quit()
 
-theta_rad = np.deg2rad(thetadata)
+theta_rad = np.deg2rad(theta_data)
 
 L = interpolate.make_splrep(theta_rad, Ldata, s=0) 
 
