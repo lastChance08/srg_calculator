@@ -10,7 +10,11 @@ A script that sovles SRG ODEs to get the phase current as a function of the roto
 ##### srg_optimizer.py
 A PyGAD-based genetic algorithm script that optimizes SRG firing/generation angles for specified RPMs and voltage
 
+#### SRG
 ![SRG](https://github.com/lastChance08/srg_calculator/blob/main/media/srg.png "SRG")
+#### Inductance graph
 ![Inductance graph](https://github.com/lastChance08/srg_calculator/blob/main/media/L.png "Inductance graph")
+#### Inductance derivative graph
 ![Inductance derivative graph](https://github.com/lastChance08/srg_calculator/blob/main/media/dLdTheta.png "Inductance derivative graph")
+#### Phase current graph
 ![Phase current graph](https://github.com/lastChance08/srg_calculator/blob/main/media/dLdTheta.png "Phase current graph")
