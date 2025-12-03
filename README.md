@@ -17,4 +17,4 @@ A PyGAD-based genetic algorithm script that optimizes SRG firing/generation angl
 #### Inductance derivative graph
 ![Inductance derivative graph](https://github.com/lastChance08/srg_calculator/blob/main/media/dLdTheta.png "Inductance derivative graph")
 #### Phase current graph
-![Phase current graph](https://github.com/lastChance08/srg_calculator/blob/main/media/dLdTheta.png "Phase current graph")
+![Phase current graph](https://github.com/lastChance08/srg_calculator/blob/main/media/i.png "Phase current graph")
