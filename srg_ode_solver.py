@@ -7,18 +7,18 @@ import json
 
 inputFileName = "srg8.json"
 
-theta1 = np.deg2rad(1.4)
-theta2 = np.deg2rad(9.3)
-theta_end = np.deg2rad(16.4)
+theta1 = np.deg2rad(1.3)
+theta2 = np.deg2rad(9.2)
+theta_end = np.deg2rad(16.3)
 
 strokes = 8
-rpm = 600
+rpm = 1200
 omega = rpm * np.pi / 30
 r =  1
 U1 = 24
 U2 = 24
-Usw = 0.1
-Ud = 0.3
+Usw = 0.1 #Voltage drop on a MOSFET (excitation phase)
+Ud = 0.3  #Diode forward volage (generation phase)
 # Initial condition
 i0 = 0
 
@@ -56,7 +56,7 @@ plt.show()
 
 
 def didtheta_excite(theta, i):
-    return -(dLdTh(theta) * omega + r)/(L(theta)*omega)*i + (U1)/(L(theta)*omega)
+    return -(dLdTh(theta) * omega + r) / (L(theta) * omega) * i + (U1 - 2 * Usw) / (L(theta) * omega)
 
 # Solve the ODE
 i_excite = solve_ivp(didtheta_excite, [theta1, theta2], [0], method="RK23", dense_output=True)
@@ -71,7 +71,7 @@ current_excite = i_excite.sol(theta_excite)
 #quit()
 
 def didtheta_generate(theta, i):
-    return -(dLdTh(theta) * omega + r)/(L(theta)*omega)*i - (U2)/(L(theta)*omega)
+    return -(dLdTh(theta) * omega + r) / (L(theta) * omega) * i - (U2 - 2 * Ud) / (L(theta) * omega)
 
 # Solve the ODE
 i_generate = solve_ivp(didtheta_generate, [theta2, theta_end], i_excite.sol(theta2), method="RK23", dense_output=True)

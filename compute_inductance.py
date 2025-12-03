@@ -11,8 +11,9 @@ tmpFileName = tmpPrj + ".fem"
 
 startAngle = -25
 endAngle = 25
-points = 30
+points = 60
 
+#That's bad but innerangle doesn't affect non-airgap boundaries
 def setInnerAngle(angle):
     try:
         # Read the file content
@@ -33,7 +34,6 @@ def setInnerAngle(angle):
 
 
 shutil.copy(inputFileName, tmpFileName)
-# Angle in radians, theta=0 
 thetaArray = np.linspace(startAngle, endAngle, points)
 inductanceArray = np.array([])
 
