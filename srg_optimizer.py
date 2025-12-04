@@ -3,6 +3,7 @@ import numpy as np
 from scipy.integrate import quad
 from scipy.integrate import solve_ivp
 from scipy import interpolate
+from scipy.ndimage import maximum
 import json
 
 input_file_name = "srg8.json"
@@ -11,26 +12,31 @@ r = 1
 U1 = 24
 U2 = 24
 
-Usw = 0.1
+Rdson = 0.05 #Rdson of a MOSFET (excitation phase)
 Ud = 0.3
 
 strokes = 8
 rpm = 600
 omega = rpm * np.pi / 30
 
+Imax = 2
 
 num_genes = 3
 step = 0.1
-gene_space = [{'low': -3, 'high': 4, "step": step}, {'low': 0, 'high': 8, "step": step}, {'low': 0, 'high': 12, "step": step}]
+# Genes
+# Gene 1 is theta1
+# Gene 2 is theta2 - theta1
+# Gene 3 is theta_end - theta2
+gene_space = [{'low': -4, 'high': 4, "step": step}, {'low': 0, 'high': 12, "step": step}, {'low': 0, 'high': 15, "step": step}]
 
-num_generations = 30 # Number of generations.
-num_parents_mating = 2 # Number of solutions to be selected as parents in the mating pool.
+num_generations = 100 # Number of generations.
+num_parents_mating = 5 # Number of solutions to be selected as parents in the mating pool.
 
-sol_per_pop = 20 # Number of solutions in the population.
+sol_per_pop = 30 # Number of solutions in the population.
 
 try:
-    with open(input_file_name, 'r') as inputFile:
-        file_content = inputFile.read()
+    with open(input_file_name, 'r') as input_file:
+        file_content = input_file.read()
         file_data = json.loads(file_content)
         theta_data = file_data["theta"]
         Ldata = file_data["inductance"]
@@ -45,7 +51,7 @@ L = interpolate.make_splrep(theta_rad, Ldata, s=0)
 dLdTh = L.derivative()
 
 def didtheta_excite(theta, i):
-    return -(dLdTh(theta) * omega + r) / (L(theta) * omega) * i + (U1 - 2 * Usw) / (L(theta) * omega)
+    return -(dLdTh(theta) * omega + r + Rdson * 2) / (L(theta) * omega) * i + U1 / (L(theta) * omega)
 
 def didtheta_generate(theta, i):
     return -(dLdTh(theta) * omega + r) / (L(theta) * omega) * i - (U2 - 2 * Ud) / (L(theta) * omega)
@@ -61,7 +67,12 @@ def fitness_func(ga_instance, solution, solution_idx):
     i_generate = solve_ivp(didtheta_generate, [theta2, theta_end], i_excite.sol(theta2), method="Radau",dense_output=True)
     y, err = quad(i_generate.sol, theta2, theta_end)
     gen_enegry = y * U2
+
+    max_current = maximum(np.append(i_excite.y,  i_generate.y))
     power = (gen_enegry - exc_enegry) * strokes * rpm / 60
+    if(max_current > Imax):
+        power = power * 0.2
+        #print(power)
     return power
 
 
@@ -86,7 +97,7 @@ ga_instance = pygad.GA(num_generations=num_generations,
 # Running the GA to optimize the parameters of the function.
 ga_instance.run()
 
-#ga_instance.plot_fitness()
+ga_instance.plot_fitness()
 
 # Returning the details of the best solution.
 solution, solution_fitness, solution_idx = ga_instance.best_solution(ga_instance.last_generation_fitness)

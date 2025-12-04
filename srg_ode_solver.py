@@ -2,25 +2,24 @@ import numpy as np
 from scipy.integrate import quad
 from scipy.integrate import solve_ivp
 from scipy import interpolate
+from scipy.ndimage import maximum
 import matplotlib.pyplot as plt
 import json
 
 input_file_name = "srg8.json"
 
-theta1 = np.deg2rad(1.3)
-theta2 = np.deg2rad(9.2)
-theta_end = np.deg2rad(16.3)
+theta1 = np.deg2rad(-2.1)
+theta2 = np.deg2rad(6.5)
+theta_end = np.deg2rad(14.5)
 
 strokes = 8
-rpm = 1200
+rpm = 600
 omega = rpm * np.pi / 30
 r =  1
 U1 = 24
 U2 = 24
-Usw = 0.1 #Voltage drop on a MOSFET (excitation phase)
+Rdson = 0.05 #Rdson of a MOSFET (excitation phase)
 Ud = 0.3  #Diode forward volage (generation phase)
-# Initial condition
-i0 = 0
 
 try:
     with open(input_file_name, 'r') as inputFile:
@@ -56,7 +55,7 @@ plt.show()
 
 
 def didtheta_excite(theta, i):
-    return -(dLdTh(theta) * omega + r) / (L(theta) * omega) * i + (U1 - 2 * Usw) / (L(theta) * omega)
+    return -(dLdTh(theta) * omega + r + Rdson * 2) / (L(theta) * omega) * i + U1 / (L(theta) * omega)
 
 # Solve the ODE
 i_excite = solve_ivp(didtheta_excite, [theta1, theta2], [0], method="RK23", dense_output=True)
@@ -81,6 +80,10 @@ gen_enegry = y * U2
 
 power = (gen_enegry - exc_enegry) * strokes * rpm / 60
 print("Power:", power)
+
+
+max_current = maximum(np.append(i_excite.y,  i_generate.y))
+print(max_current)
 
 theta_generate = np.linspace(theta2, theta_end, 300)
 current_generate= i_generate.sol(theta_generate)

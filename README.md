@@ -1,5 +1,5 @@
 # An XFEMM based switched reluctance generator calculator
-You need XFEMM binaries built for your architecture with a replaced fpproc/main.cpp file as the default one doesn't output inductance.
+You need XFEMM binaries built for your architecture with a replaced fpproc/main.cpp file as the default one doesn't output the inductance.
 
 ##### compute_inductance.py
 An XFEMM wrapper that changes the rotor position and runs XFEMM apps
